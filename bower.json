@@ -1,9 +1,10 @@
 {
-  "name": "colearnr/videojs-vimeo",
-  "version": "1.0.1",
-  "main": ["vjs.vimeo.js"],
+  "name": "videojs-vimeo",
+  "version": "2.0.0",
+  "main": ["src/Vimeo.js"],
   "description": "Allows you to use Vimeo URL as source with Video.js.",
+  "license": "MIT",
   "dependencies": {
-    "video.js": "~4.10"
+    "video.js": "^5.0.0"
   }
 }
