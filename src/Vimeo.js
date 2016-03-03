@@ -48,12 +48,13 @@ THE SOFTWARE. */
       // Parent is not set yet so we have to wait a tick
       setTimeout(function() {
         this.el_.parentNode.className += ' vjs-vimeo';
+        
       }.bind(this));
       
     },
     
-    dispose: function() {
-      this.el_.parentNode.className = this.el_.parentNode.className.replace(' vjs-vimeo', '');
+    dispose: function() {      
+      this.el_.parentNode.className = this.el_.parentNode.className.replace(' vjs-vimeo', '');      
     },
     
     createEl: function() {
@@ -94,11 +95,11 @@ THE SOFTWARE. */
         divWrapper.appendChild(divBlocker);
       }
 
-      if (Vimeo.isApiReady) {
-        this.initPlayer();
-      } else {
+      // if (Vimeo.isApiReady) {
+        // this.initPlayer();
+      // } else {
         Vimeo.apiReadyQueue.push(this);
-      }
+      // }
       
       if(this.options_.poster == "") {
         $.getJSON(this.baseApiUrl + this.videoId + '.json?callback=?', {format: "json"}, (function(_this){
@@ -117,6 +118,7 @@ THE SOFTWARE. */
       var vimeoVideoID = Vimeo.parseUrl(this.options_.source.src).videoId;
       //load vimeo
       if (this.vimeo && this.vimeo.api) {
+        this.vimeo.removeEvent('ready');  
         this.vimeo.api('unload');
         delete this.vimeo;
       }
@@ -136,8 +138,8 @@ THE SOFTWARE. */
       };
 
       this.vimeo.addEvent('ready', function(id){
-        self.onReady();
-
+        self.onPlayerReady();
+        
         self.vimeo.addEvent('loadProgress', function(data, id){ self.onLoadProgress(data); });
         self.vimeo.addEvent('playProgress', function(data, id){ self.onPlayProgress(data); });
         self.vimeo.addEvent('play', function(id){ self.onPlay(); });
@@ -145,11 +147,10 @@ THE SOFTWARE. */
         self.vimeo.addEvent('finish', function(id){ self.onFinish(); });
         self.vimeo.addEvent('seek', function(data, id){ self.onSeek(data); });
 
-      });
-      
+      });      
     },
     
-    onReady: function(){
+    onPlayerReady: function(){
       this.isReady_ = true;
       this.triggerReady();
       this.trigger('loadedmetadata');
