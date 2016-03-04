@@ -40,6 +40,7 @@ THE SOFTWARE. */
 
   var Vimeo = videojs.extend(Tech, {
     constructor: function(options, ready) {
+      console.log('options_', options);
       Tech.call(this, options, ready);
       if(options.poster != "") {this.setPoster(options.poster);}
       this.setSrc(this.options_.source.src, true);
@@ -95,11 +96,12 @@ THE SOFTWARE. */
         divWrapper.appendChild(divBlocker);
       }
 
-      // if (Vimeo.isApiReady) {
-        // this.initPlayer();
-      // } else {
+      console.log('options_', this.options_);
+      if (Vimeo.isApiReady && this.options_.source.source === 'player') {
+        this.initPlayer();
+      } else {
         Vimeo.apiReadyQueue.push(this);
-      // }
+      }
       
       if(this.options_.poster == "") {
         $.getJSON(this.baseApiUrl + this.videoId + '.json?callback=?', {format: "json"}, (function(_this){
