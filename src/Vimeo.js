@@ -50,11 +50,16 @@ THE SOFTWARE. */
       setTimeout(function() {
         this.el_.parentNode.className += ' vjs-vimeo';
         
+        if (Vimeo.isApiReady) {
+          this.initPlayer();
+        } else {
+          Vimeo.apiReadyQueue.push(this);
+        }
       }.bind(this));
       
     },
     
-    dispose: function() {      
+    dispose: function() {
       this.el_.parentNode.className = this.el_.parentNode.className.replace(' vjs-vimeo', '');      
     },
     
@@ -94,14 +99,7 @@ THE SOFTWARE. */
         }.bind(this);
 
         divWrapper.appendChild(divBlocker);
-      }
-
-      console.log('options_', this.options_);
-      if (Vimeo.isApiReady && this.options_.source.source === 'player') {
-        this.initPlayer();
-      } else {
-        Vimeo.apiReadyQueue.push(this);
-      }
+      }      
       
       if(this.options_.poster == "") {
         $.getJSON(this.baseApiUrl + this.videoId + '.json?callback=?', {format: "json"}, (function(_this){
@@ -110,7 +108,7 @@ THE SOFTWARE. */
             _this.setPoster(data[0].thumbnail_large);
           };
         })(this));
-      }
+      }     
 
       return divWrapper;
     },
@@ -118,6 +116,8 @@ THE SOFTWARE. */
     initPlayer: function() {
       var self = this;
       var vimeoVideoID = Vimeo.parseUrl(this.options_.source.src).videoId;
+
+      Vimeo.isApiReady = true;
       //load vimeo
       if (this.vimeo && this.vimeo.api) {
         this.vimeo.removeEvent('ready');  
@@ -149,7 +149,7 @@ THE SOFTWARE. */
         self.vimeo.addEvent('finish', function(id){ self.onFinish(); });
         self.vimeo.addEvent('seek', function(data, id){ self.onSeek(data); });
 
-      });      
+      });
     },
     
     onPlayerReady: function(){
