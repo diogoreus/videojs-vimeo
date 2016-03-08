@@ -153,12 +153,17 @@ THE SOFTWARE. */
     },
     
     onPlayerReady: function(){
+      console.log('[vendor]videojs-vimeo [method]onPlayerReady [var]playOnReady: ', this.playOnReady)
       this.isReady_ = true;
       this.triggerReady();
       this.trigger('loadedmetadata');
       if (this.startMuted) {
         this.setMuted(true);
         this.startMuted = false;
+      }
+
+      if (this.playOnReady) {
+        this.play();
       }
     },
     
@@ -228,12 +233,14 @@ THE SOFTWARE. */
     },
 
     setSrc: function(source) {
-      if (!source || !source.src) {
+      console.log('[vendor]videojs-vimeo [method]setSrc [var]autoplay, source: ', this.options_.autoplay, source)
+      if (!source) {
         return;
       }
+      console.log('[vendor]videojs-vimeo [method]setSrc [var]autoplay: ', this.options_.autoplay)
 
       this.source = source;
-      this.url = Vimeo.parseUrl(source.src);
+      this.url = Vimeo.parseUrl(source);
 
       if (!this.options_.poster) {
         if (this.url.videoId) {
@@ -249,7 +256,8 @@ THE SOFTWARE. */
         }
       }
 
-      if (this.options_.autoplay && !_isOnMobile) {
+      
+      if (this.options_.autoplay) {
         if (this.isReady_) {
           this.play();
         } else {
@@ -264,7 +272,15 @@ THE SOFTWARE. */
     
     //TRIGGER
     load : function(){},
-    play : function(){ this.vimeo.api('play'); },
+    play : function(){ 
+      if (this.isReady_) {
+        this.vimeo.api('play');
+      }else{
+        this.trigger('waiting');
+        this.playOnReady = true;
+      }
+    },
+      
     pause : function(){ this.vimeo.api('pause'); },
     paused : function(){
       return this.vimeoInfo.state !== VimeoState.PLAYING &&
